@@ -1,8 +1,9 @@
-# main.py - VERSIÓN CON GESTIÓN DE RIESGO MEJORADA
+# main.py - VERSIÓN CON SISTEMA DE PROTECCIÓN INTEGRADO
 import time
 import logging
 from datetime import datetime
 from core.mt5_connector import MT5Connector
+from core.risk_manager import RiskManager  # ✅ NUEVO IMPORT
 from strategies.forex_scalper import ForexScalper
 from strategies.gold_trend import GoldTrendStrategy as GoldTrend
 from strategies.turtle_strategy import TurtleStrategy
@@ -18,6 +19,9 @@ class NextiaTradingBot:
         if not self.check_connection():
             return
             
+        # ✅ SISTEMA DE PROTECCIÓN (AGREGAR ESTO)
+        self.risk_manager = RiskManager(self.mt5)
+        
         # Estrategias profesionales
         self.strategies = {
             'scalper': ForexScalper(),
@@ -30,7 +34,7 @@ class NextiaTradingBot:
             'winning_trades': 0,
             'total_pnl': 0.0,
             'cycle_count': 0,
-            'max_trades_per_cycle': 3  # ✅ MÁXIMO 3 TRADES POR CICLO
+            'max_trades_per_cycle': 3
         }
 
     def setup_logging(self):
@@ -44,9 +48,10 @@ class NextiaTradingBot:
     def print_welcome(self):
         """Mensaje de bienvenida profesional"""
         print("\n" + "="*60)
-        print("NEXTIA TRADING BOT - SISTEMA PROFESIONAL FOREX")
+        print("🛡️ NEXTIA TRADING BOT - SISTEMA PROTEGIDO")  # ✅ ACTUALIZADO
         print("="*60)
-        print("Version: PRO 3.1 | Modo: PRODUCCION SEGURA")
+        print("Version: PRO 3.2 | Modo: PROTECCIÓN ACTIVADA")  # ✅ ACTUALIZADO
+        print("Protecciones: Drawdown 10% | Cierre auto 4PM")  # ✅ NUEVO
         print("Iniciado:", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
         print("="*60)
 
@@ -73,6 +78,7 @@ class NextiaTradingBot:
     def get_open_positions_count(self):
         """Obtiene número de posiciones abiertas"""
         try:
+            import MetaTrader5 as mt5  # ✅ AGREGAR ESTE IMPORT
             positions = mt5.positions_get()
             return len(positions) if positions else 0
         except:
@@ -86,18 +92,25 @@ class NextiaTradingBot:
         print(f"\nCICLO {self.performance['cycle_count']} [{current_time}]")
         print("-" * 40)
         
-        # ✅ VERIFICAR POSICIONES ABIERTAS
+        # ✅ VERIFICAR PROTECCIONES CRÍTICAS (AGREGAR ESTO)
+        if not self.risk_manager.verificar_protecciones():
+            print("🛑 TRADING DETENIDO - Protección activada")
+            return
+            
+        # ✅ APLICAR TRAILING STOPS (AGREGAR ESTO)
+        self.risk_manager.aplicar_trailing_stops()
+        
         open_positions = self.get_open_positions_count()
         print(f"Posiciones abiertas: {open_positions}")
         
-        # ✅ SI HAY MUCHAS POSICIONES, ESPERAR
+        # ✅ SI HAY MUCHAS POSICIONES, ESPERAR (ESTE YA LO TIENES)
         if open_positions >= 5:
             print("DEMASIADAS POSICIONES - ESPERANDO...")
             return
             
         trades_this_cycle = 0
         
-        # Ejecutar estrategias
+        # Ejecutar estrategias (TODO ESTO SE MANTIENE IGUAL)
         for name, strategy in self.strategies.items():
             if trades_this_cycle >= self.performance['max_trades_per_cycle']:
                 break
@@ -186,9 +199,10 @@ class NextiaTradingBot:
     def run(self):
         """Ejecuta el bot principal"""
         print("\n🚀 INICIANDO SISTEMA NEXTIA TRADING...")
-        print("✅ Bot activo - Modo: GESTIÓN SEGURA")
+        print("🛡️ Bot activo - Modo: PROTECCIÓN ACTIVADA")  # ✅ ACTUALIZADO
         print("💡 Máximo 3 trades por ciclo")
-        print("💡 Verificación de posiciones activa")
+        print("💡 Cierre automático 4 PM México")  # ✅ NUEVO
+        print("💡 Drawdown máximo 10%")  # ✅ NUEVO
         
         try:
             while True:
